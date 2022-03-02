@@ -2,6 +2,16 @@ const { MerkleTree } = require("merkletreejs");
 const keccak256 = require("keccak256");
 
 exports.handler = async (event) => {
+    let address = event.address;
+    let proof = MerkleTreeProof(address);
+    const response = {
+        statusCode: 200,
+        body: proof,
+    };
+    return response;
+};
+
+function MerkleTreeProof(address) {
     // TODO implement
     let addresses = [
         "0x0000000000000000000000000000000000000000",
@@ -16,13 +26,8 @@ exports.handler = async (event) => {
     const tree = new MerkleTree(leaves, keccak256, {
         sortPairs: true,
     });
-    const root = tree.getRoot().toString('hex') //TODO: Use this when you need to get the root of the tree (For the smart contract)
-    let leaf = keccak256(event.address)
+    const root = tree.getRoot().toString("hex"); //TODO: Use this when you need to get the root of the tree (For the smart contract)
+    let leaf = keccak256(address);
     const hexProof = tree.getHexProof(leaf);
-
-    const response = {
-        statusCode: 200,
-        body: hexProof,
-    };
-    return response;
-};
+    return hexProof;
+}
